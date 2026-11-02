@@ -1,0 +1,46 @@
+*{
+    margin:0px;
+    padding: 0px;
+}
+
+/* This is login page */
+
+.container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    margin-top: 10%;
+    border-radius: 20px;
+    margin-left: 35%;
+    margin-right: 35%; 
+    padding: 50px; 
+    box-shadow: 0 4px 20px grey;
+     
+}
+
+.login{
+    margin-bottom: 30px;
+}
+
+#firstName,#lastName,#email,#pass{
+    height:28px;
+    width: 70%;
+    padding-left: 10px;
+    border: 1px solid grey;
+    border-radius: 5px;
+    margin: 5px;
+}
+
+#button{
+    height:30px;
+    width: 71%;
+    margin: 5px;
+    border: 1px solid black;
+    border-radius:5px ;
+    color: white;
+    background-color: black;
+}
+
+
+ 

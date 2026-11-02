@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Blogging App</title>
+        <link rel="stylesheet" href="style.css">
+    </head>
+    <body>
+
+        <!-- This is login page -->
+        <div class="container">
+        <h1 class="login">Login</h1>
+        <input id="firstName" type="text" placeholder="First Name">
+        <br>
+        <input id="lastName" type="text" placeholder="Last Name">
+        <br>
+        <input id="email" type="email" placeholder="Email Address">
+        <br>
+        <input id="pass" type="password" placeholder="Password">
+        <br>
+        <button onclick="JoinUs()" id="button">Join Us  <span>  &rarr;</span></button>
+        <p id="msg"></p>
+        </div>
+<!--         
+        <script>
+
+            async function JoinUs(){
+
+                const btn = document.getElementById("button");
+                const msg = document.getElementById("msg");
+
+                const data = {
+                    firstName: document.getElementById("firstName").value.trim(),
+                    lastName: document.getElementById("lastName").value.trim(),
+                    email: document.getElementById("email").value.trim(),
+                    password: document.getElementById("pass").value,
+                };
+
+                if(data.firstName =="" || data.lastName =="" || data.email =="" || data.password ==""){
+                    msg.className = 'err';
+                    msg.textContent = 'Please fill in all the details.';
+                    return;
+                }
+
+                btn.disabled = true;
+                msg.className = '';
+                msg.textContent = 'Saved!';
+
+                try{
+                    const res = await fetch('http://localhost:3333/users',{
+                        method: 'POST',
+                        headers: {'Content-Type': 'application/json'},
+                        body: JSON.stringify(data),
+                    })
+                    const result = await res.json();
+                     if (!res.ok){ throw new Error(result.msg || 'Request failed')}
+
+                    msg.className = 'ok';
+                     msg.textContent = result.msg;
+
+                    //  form.reset()
+                       
+                     document.getElementById("firstName").value = '';
+                    document.getElementById("lastName").value = '';
+                    document.getElementById("email").value = '';
+                    document.getElementById("pass").value='';
+                      } catch (err) {
+                      msg.className = 'err';
+                   msg.textContent = err.message;
+                  } finally {
+                   btn.disabled = false;
+                      
+                }
+                }
+            
+        </script> -->
+
+
+        <script>
+            
+async function JoinUs() {
+    const btn = document.getElementById("button");
+    const msg = document.getElementById("msg");
+
+    const data = {
+        firstName: document.getElementById("firstName").value.trim(),
+        lastName: document.getElementById("lastName").value.trim(),
+        email: document.getElementById("email").value.trim(),
+        password: document.getElementById("pass").value
+    };
+
+    if (
+        data.firstName === "" ||
+        data.lastName === "" ||
+        data.email === "" ||
+        data.password === ""
+    ) {
+        msg.className = "err";
+        msg.textContent = "Please fill in all the details.";
+        return;
+    }
+
+    btn.disabled = true;
+    msg.className = "";
+    msg.textContent = "Saving...";
+
+    try {
+        const res = await fetch("http://localhost:3333/users", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+
+        if (!res.ok) {
+            throw new Error(
+                result.msg || result.message || "Request failed"
+            );
+        }
+
+        msg.className = "ok";
+        msg.textContent = result.msg || "Saved successfully!";
+
+                document.getElementById("firstName").value = '';
+                document.getElementById("lastName").value = '';
+                document.getElementById("email").value = '';
+                document.getElementById("pass").value='';
+
+    } catch (err) {
+        msg.className = "err";
+        msg.textContent = err.message;
+    } finally {
+        btn.disabled = false;
+    }
+}
+
+        </script>
+    </body>
+</html>
