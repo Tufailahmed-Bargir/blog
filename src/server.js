@@ -1,33 +1,189 @@
+ 
+// import { drizzle } from 'drizzle-orm/node-postgres';
+// import { eq } from 'drizzle-orm';
+// import { usersTable } from './db/schema.js';
+// import cors from 'cors';
+// import bcrypt from 'bcrypt';
+// import dotenvt from 'dotenv';
+
+
+
+// import express from 'express';
+// const app = express();
+
+// dotenvt.config();
+
+// app.use(express.json())
+
+// app.use(cors({
+//     origin: '*',
+//     methods: ['GET', 'POST', 'OPTIONS'],
+//     allowedHeaders: ['Content-Type']
+// }));
+
+// const db = drizzle(process.env.DATABASE-URL);
+
+// app.get ('/', function (req, res){
+
+//     const string = "hdfhyrrrrrrrrrrrrrrrrrrrrr"
+//     console.log("string");
+//     console.log(string);
+    
+//     res.json("Hello!")
+// })
+
+// app.post ('/users', async function (req, res){
+
+//     try{
+//     const { firstName, lastName, email, password} = req.body
+
+//     console.log('data comming from backend is');
+//     console.log(firstName, lastName, email, password);
+    
+
+//     if(!firstName){
+//         res.json({
+//             msg:"provide all the required things!"
+//         })
+//     }
+
+//     const hashedPassword = await bcrypt.hash(password, 10);
+
+//    const emailCheck = await db.select().from(usersTable).where(eq(usersTable.email, email));
+
+//         console.log('email check is', emailCheck);
+        
+
+//         if(emailCheck){
+//            return  res.json({
+//                 msg:"please enter another email as it is already exists!"
+//             })
+//         }
+
+   
+//    const user1 =  await db.insert(usersTable).values({
+//         firstName,
+//         lastName,
+//         email,
+//         password: hashedPassword
+//     });
+//     console.log("New user created!")
+
+//     res.json({
+//         msg:"user created successful!",
+//         user1
+//     })
+// }catch(error){
+//     res.json({
+//         msg:"error found",
+//         error
+//     })
+// }
+// })
+
+//  app.post('/user', async function (req, res){
+//     const user = req.body
+//     user = {
+//         name: "",
+//         email: "",
+//         password: ""
+//     };
+
+//     res.json(user);
+//  })
+
+
+
+// app.listen(3333, function(){
+//     console.log("Server is on, 3333")
+// })
+
+
+
+
+
+
+// UPDATED / FIXED CODE
 import 'dotenv/config';
 import { drizzle } from 'drizzle-orm/node-postgres';
 import { eq } from 'drizzle-orm';
 import { usersTable } from './db/schema.js';
 import cors from 'cors';
-  
-
+import bcrypt from 'bcrypt';
 import express from 'express';
+
 const app = express();
 
-app.use(express.json())
+app.use(express.json());
 
 app.use(cors({
-    origin: '*',
-    method: ['GET', 'POST', 'OPTIONS'],
-    allowedHeaders: ['Content-Type']
+  origin: '*',
+  methods: ['GET', 'POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type']
 }));
 
-const db = drizzle("postgresql://neondb_owner:npg_CDE0LGWiO1AS@ep-steep-wildflower-b4cbixgl-pooler.c-6.us-east-2.aws.neon.tech/neondb?sslmode=require&channel_binding=require");
+const db = drizzle(process.env.DATABASE_URL);
 
-app.get ('/', function (req, res){
-    res.json("Hello!")
-})
+app.get('/', (req, res) => {
+  res.json({ msg: 'Hello!' });
+});
 
-app.post ('/users', async function (req, res){
-    const user = req.body
-    await db.insert(usersTable).values(user);
-    console.log("New user created!")
-})
+app.post('/users', async (req, res) => {
+  try {
+    const { firstName, lastName, email, password } = req.body;
 
-app.listen(3333, function(){
-    console.log("Server is on, 3333")
-})
+    if (!firstName || !lastName || !email || !password) {
+      return res.status(400).json({
+        msg: 'Please provide all required fields!'
+      });
+    }
+
+    const existingUsers = await db
+      .select()
+      .from(usersTable)
+      .where(eq(usersTable.email, email));
+
+    if (existingUsers.length > 0) {
+      return res.status(409).json({
+        msg: 'Please enter another email; this email already exists!'
+      });
+    }
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+
+    const [newUser] = await db
+      .insert(usersTable)
+      .values({
+        firstName,
+        lastName,
+        email,
+        password: hashedPassword
+      })
+      .returning();
+
+    return res.status(201).json({
+      msg: 'User created successfully!',
+      user: newUser
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      msg: 'Something went wrong',
+      error: error.message
+    });
+  }
+});
+
+app.post('/user', (req, res) => {
+  const user = {
+    name: '',
+    email: '',
+    password: ''
+  };
+
+  res.json(user);
+});
+
+app.listen(3333, () => {
+  console.log('Server is running on port 3333');
+});
